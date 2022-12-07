@@ -1,16 +1,16 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 
-get_filename_component(_TGT_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
-set(_TGT_VERSION 9.1.0)
+get_filename_component(_DEP_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
+set(_DEP_VERSION 9.1.0)
 
 FetchContent_Declare(
-        ${_TGT_NAME}
-        PREFIX ${DEPS_DIR}/${_TGT_NAME}
-        INSTALL_DIR ${DEPS_DIR}/${_TGT_NAME}
-        URL https://codeload.github.com/fmtlib/${_TGT_NAME}/tar.gz/refs/tags/${_TGT_VERSION}
+        ${_DEP_NAME}
+        PREFIX ${DEPS_PREFIX}/${_DEP_NAME}
+        INSTALL_DIR ${DEPS_PREFIX}/${_DEP_NAME}
+        URL https://codeload.github.com/fmtlib/${_DEP_NAME}/tar.gz/refs/tags/${_DEP_VERSION}
 )
 
-FetchContent_MakeAvailable(${_TGT_NAME})
+FetchContent_MakeAvailable(${_DEP_NAME})
 
-unset(_TGT_NAME)
-unset(_TGT_VERSION)
+unset(_DEP_NAME)
+unset(_DEP_VERSION)
