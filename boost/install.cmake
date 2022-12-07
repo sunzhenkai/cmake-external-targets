@@ -11,7 +11,7 @@ function(Process)
 
     set(CMAKE_ARGS
             -DCMAKE_BUILD_TYPE=Release
-            -DCMAKE_INSTALL_PREFIX=${DEPS_PREFIX}
+            -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}
             -DCMAKE_INSTALL_LIBDIR=lib
             -DBUILD_STATIC_LIB=ON
             -DBUILD_SHARED_LIB=OFF)

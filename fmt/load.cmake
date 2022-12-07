@@ -5,8 +5,8 @@ set(_DEP_VERSION 9.1.0)
 
 FetchContent_Declare(
         ${_DEP_NAME}
-        PREFIX ${DEPS_PREFIX}/${_DEP_NAME}
-        INSTALL_DIR ${DEPS_PREFIX}/${_DEP_NAME}
+        PREFIX ${DEPS_INSTALL_DIR}/${_DEP_NAME}
+        INSTALL_DIR ${DEPS_INSTALL_DIR}/${_DEP_NAME}
         URL https://codeload.github.com/fmtlib/${_DEP_NAME}/tar.gz/refs/tags/${_DEP_VERSION}
 )
 
