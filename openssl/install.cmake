@@ -3,16 +3,18 @@ include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 
 function(Process)
     get_filename_component(DEP_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
-    SetBasicVariables(NAME ${DEP_NAME} VERSION OpenSSL_1_1_1s)
-    ExternalProject_Add(
-            ${DEP_NAME}
-            PREFIX ${DEPS_PREFIX}
-            URL ${GITHUB_DOWNLOAD_URL}
-            INSTALL_DIR ${DEP_INSTALL_DIR}
-            CONFIGURE_COMMAND <SOURCE_DIR>/config --prefix=${DEP_INSTALL_DIR}
-            BUILD_COMMAND ${MAKE_EXECUTABLE} -j
-            INSTALL_COMMAND ${MAKE_EXECUTABLE} -j install PREFIX=<INSTALL_DIR> prefix=<INSTALL_DIR>
-    )
+    if (NOT TARGET ${DEP_NAME})
+        SetBasicVariables(NAME ${DEP_NAME} VERSION OpenSSL_1_1_1s)
+        ExternalProject_Add(
+                ${DEP_NAME}
+                PREFIX ${DEPS_PREFIX}
+                URL ${GITHUB_DOWNLOAD_URL}
+                INSTALL_DIR ${DEP_INSTALL_DIR}
+                CONFIGURE_COMMAND <SOURCE_DIR>/config --prefix=${DEP_INSTALL_DIR}
+                BUILD_COMMAND ${MAKE_EXECUTABLE} -j
+                INSTALL_COMMAND ${MAKE_EXECUTABLE} -j install PREFIX=<INSTALL_DIR> prefix=<INSTALL_DIR>
+        )
+    endif ()
 endfunction(Process)
 Process()
 unset(Process)

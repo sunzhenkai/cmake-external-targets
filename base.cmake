@@ -6,7 +6,11 @@ set(FETCHCONTENT_BASE_DIR "${DEPS_INSTALL_DIR}")
 include(ExternalProject)
 
 function(GetCMakeArgs)
+    string(REPLACE ";" "\\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
     set(CMAKE_ARGS
+#            -DCMAKE_PREFIX_PATH="/tmp/cpp-external-lib/openssl\\;/tmp/cpp-external-lib/cryptopp"
+#            -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"
+            -DCMAKE_PREFIX_PATH="/tmp/cpp-external-lib/openssl;/tmp/cpp-external-lib/cryptopp"
             -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
             -DCMAKE_BUILD_TYPE=Release
             -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}/${_DEP_NAME}
@@ -35,4 +39,10 @@ macro(SetBasicVariables)
         set(DEP_AUTHOR ${ARG_NAME})
     endif ()
     set(GITHUB_DOWNLOAD_URL https://codeload.github.com/${DEP_AUTHOR}/${DEP_PROJECT}/tar.gz/refs/tags/${DEP_VERSION})
+
+    GetCMakeArgs()
+
+    string(TOUPPER ${DEP_NAME} DEP_UNAME)
+    set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
+    set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
 endmacro(SetBasicVariables)
