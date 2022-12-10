@@ -137,7 +137,6 @@ function(MakeDepReady)
     SetParentScopeVariables()
     if (ARG_ADD_BIN_PATH)
         set(ENV{PATH} "${DEP_INSTALL_DIR}/bin:$ENV{PATH}")
-        message("GGGGG $ENV{PATH}")
     endif ()
 endfunction(MakeDepReady)
 

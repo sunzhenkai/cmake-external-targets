@@ -3,8 +3,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/../help2man/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../textinfo/load.cmake)
 # https://github.com/westes/flex
 
-message("hello $ENV{PATH}")
-
 MakeDepReady(VERSION v2.6.4 AUTHOR westes
         CONFIGURE_COMMAND ./autogen.sh --prefix=<INSTALL_DIR> && ./configure --prefix=<INSTALL_DIR>
         BUILD_IN_SOURCE TRUE
