@@ -1,4 +1,5 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../re2/load.cmake)
 # https://github.com/grpc/grpc
 
 MakeDepReady(VERSION v1.49.2
@@ -10,4 +11,5 @@ MakeDepReady(VERSION v1.49.2
         -DgRPC_PROTOBUF_PROVIDER=package
         -DgRPC_RE2_PROVIDER=package
         -DgRPC_SSL_PROVIDER=package
-        -DgRPC_ZLIB_PROVIDER=package)
+        -DgRPC_ZLIB_PROVIDER=package
+        DEPENDS re2)

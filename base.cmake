@@ -1,10 +1,16 @@
 set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
 set(DEPS_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
 option(BUILD_DEPS "build and install deps" ON)
+option(BUILD_GCC "build gcc" OFF)
 
 include(FetchContent)
 set(FETCHCONTENT_BASE_DIR "${DEPS_INSTALL_DIR}")
 include(ExternalProject)
+
+set(ENV{CC} ${CMAKE_C_COMPILER})
+set(ENV{CXX} ${CMAKE_CXX_COMPILER})
+set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
+set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
 
 function(GetCMakeArgs)
     #string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")

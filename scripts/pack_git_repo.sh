@@ -49,6 +49,7 @@ cd "$WKD" || exit 1
 
 # clone, package and clean up
 git clone --recurse-submodule "$REPO" "$TARGET_NAME_VERSION"
-git -C "$TARGET_NAME_VERSION" checkout "$VERSION"
+git -C "$TARGET_NAME_VERSION" checkout "$VERSION" -f
+git -C "$TARGET_NAME_VERSION" submodule update --init --recursive
 tar -czf "$TARGET_NAME_VERSION.tar.gz" --exclude "\.git" --exclude "\.github" "$TARGET_NAME_VERSION"/*
 rm -rf "$TARGET_NAME_VERSION"
