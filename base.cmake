@@ -21,6 +21,8 @@ function(GetCMakeArgs)
             -DCMAKE_BUILD_TYPE=Release
             -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}/${DEP_NAME}
             -DCMAKE_INSTALL_LIBDIR=lib
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             -DBUILD_STATIC_LIB=ON
             -DBUILD_SHARED_LIB=OFF PARENT_SCOPE)
 endfunction(GetCMakeArgs)

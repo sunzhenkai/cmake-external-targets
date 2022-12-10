@@ -1,4 +1,7 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 # https://github.com/apache/thrift
 
-MakeDepReady(VERSION v0.17.0 AUTHOR apache)
+MakeDepReady(VERSION v0.17.0 AUTHOR apache
+        EXTRA_ARGS -DBUILD_CPP=ON -DBUILD_C_GLIB=ON
+        -DBUILD_JAVA=OFF -DBUILD_JAVASCRIPT=OFF -DBUILD_KOTLIN=OFF -DBUILD_NODEJS=OFF -DBUILD_PYTHON=OFF
+        )
