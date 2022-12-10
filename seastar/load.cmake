@@ -14,15 +14,15 @@ MakeDepReady(VERSION seastar-22.11.0
         -DBoost_USE_STATIC_LIBS=OFF
         -DBoost_NO_BOOST_CMAKE=ON
         -DBoost_NO_SYSTEM_PATHS=TRUE
-        -DProtobuf_USE_STATIC_LIBS=ON
         -DSeastar_INSTALL=ON
         -DSeastar_APPS=ON
         -DSeastar_DEMOS=OFF
         -DSeastar_DOCS=OFF
         -DSeastar_TESTING=OFF
+        -DSeastar_COMPRESS_DEBUG=OFF
         -DSeastar_CXX_FLAGS=-Wno-error
         -DSeastar_LD_FLAGS=-pthread
-        -DSeastar_STD_OPTIONAL_VARIANT_STRINGVIEW=ON
-        -DSeastar_CXX_DIALECT=c++17
+        -DSeastar_DEFERRED_ACTION_REQUIRE_NOEXCEPT=OFF
+        -DCMAKE_CXX_STANDARD=20
         DEPENDS fmt boost protobuf yaml-cpp c-ares lz4 cryptopp
         )

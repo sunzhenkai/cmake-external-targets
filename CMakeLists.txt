@@ -26,6 +26,7 @@ include(seastar/load.cmake)
 include(snappy/load.cmake)
 include(spdlog/load.cmake)
 include(thrift/load.cmake)
+include(valgrind/load.cmake)
 include(yaml-cpp/load.cmake)
 
 add_custom_target(cmake-external-libs ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} DEPENDS ${DEPS_LIST})
