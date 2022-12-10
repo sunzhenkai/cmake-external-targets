@@ -10,7 +10,7 @@ function(GetCMakeArgs)
     #string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
     #string(REPLACE ";" "\\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
     set(CMAKE_ARGS
-            #            -DCMAKE_PREFIX_PATH=$<CMAKE_PREFIX_PATH>
+            #-DCMAKE_PREFIX_PATH=$<CMAKE_PREFIX_PATH>
             -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
             -DCMAKE_BUILD_TYPE=Release
             -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}/${DEP_NAME}
@@ -73,9 +73,9 @@ macro(SetParentScopeVariables)
 endmacro(SetParentScopeVariables)
 
 function(MakeDepReady)
-    set(FLAG_OPT "FROM_GIT;DISABLE_COMMAND")
+    set(FLAG_OPT "FROM_GIT;DISABLE_CONFIGURE")
     set(ONE_VALUE_OPT "VERSION;AUTHOR;PROJECT;URL;BUILD_IN_SOURCE")
-    set(MUL_VALUE_OPT "DEPENDS;CUSTOM_ARGS;BUILD_COMMAND;INSTALL_COMMAND;CONFIGURE_COMMAND")
+    set(MUL_VALUE_OPT "DEPENDS;EXTRA_ARGS;BUILD_COMMAND;INSTALL_COMMAND;CONFIGURE_COMMAND")
     cmake_parse_arguments(ARG "${FLAG_OPT}" "${ONE_VALUE_OPT}" "${MUL_VALUE_OPT}" ${ARGN})
     get_filename_component(DEP_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
     if (DEFINED ${DEP_NAME}_IMPORT)
@@ -94,7 +94,7 @@ function(MakeDepReady)
         endif ()
     endif ()
 
-    if (ARG_DISABLE_COMMAND)
+    if (ARG_DISABLE_CONFIGURE)
         set(ARG_CONFIGURE_COMMAND "\"\"")
     endif ()
     if (REBUILD_NEEDED)
@@ -111,8 +111,9 @@ function(MakeDepReady)
                 GIT_SHALLOW TRUE
                 URL \${ARG_URL}
                 LIST_SEPARATOR |
-                CMAKE_ARGS \${CMAKE_ARGS} \${ARG_CUSTOM_ARGS} -DCMAKE_PREFIX_PATH=\${CMAKE_PREFIX_PATH_STR}
+                CMAKE_ARGS \${CMAKE_ARGS} \${ARG_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=\${CMAKE_PREFIX_PATH_STR}
                 DEPENDS \${ARG_DEPENDS}
+                DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                 BUILD_IN_SOURCE \${ARG_BUILD_IN_SOURCE}
                 CONFIGURE_COMMAND ${ARG_CONFIGURE_COMMAND}
                 BUILD_COMMAND \${ARG_BUILD_COMMAND}
