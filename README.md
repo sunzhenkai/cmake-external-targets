@@ -1,1 +1,4 @@
-# cmake-external-targets
+# Dependencies
+```shell
+cmake >= 3.20
+```
