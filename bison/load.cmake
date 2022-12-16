@@ -1,4 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 # https://github.com/jemalloc/jemalloc
 
 MakeDepReady(VERSION 3.8

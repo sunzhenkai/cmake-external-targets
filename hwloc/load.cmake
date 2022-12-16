@@ -1,9 +1,7 @@
-# https://github.com/abseil/abseil-cpp
-
 MakeDepReady(
-        VERSION CRYPTOPP_8_7_0
-        AUTHOR weidai11
-        DISABLE_CONFIGURE
+        VERSION hwloc-2.9.0
+        AUTHOR open-mpi
+        CONFIGURE_COMMAND ./autogen.sh && ./configure --prefix=<INSTALL_DIR>
         BUILD_IN_SOURCE TRUE
         BUILD_COMMAND ${MAKE_EXECUTABLE} -j -C <SOURCE_DIR>
         INSTALL_COMMAND ${MAKE_EXECUTABLE} -j -C <SOURCE_DIR> install PREFIX=<INSTALL_DIR> prefix=<INSTALL_DIR>

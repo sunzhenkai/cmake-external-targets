@@ -1,4 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../help2man/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../textinfo/load.cmake)
 # https://github.com/westes/flex

@@ -1,4 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../re2/load.cmake)
 # https://github.com/grpc/grpc
 

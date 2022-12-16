@@ -1,4 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../gflags/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../leveldb/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/load.cmake)

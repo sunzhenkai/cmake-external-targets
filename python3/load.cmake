@@ -1,4 +1,3 @@
-include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 # https://github.com/google/leveldb
 
 set(python3_version 3.11.1)

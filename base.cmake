@@ -1,3 +1,4 @@
+set(BASE_IMPORTED TRUE)
 set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
 set(DEPS_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
 option(BUILD_DEPS "build and install deps" ON)
