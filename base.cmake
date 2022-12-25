@@ -46,6 +46,10 @@ macro(SetBasicVariables)
         set(DEP_INSTALL_DIR ${${DEP_UNAME}_INSTALL_DIR})
     endif ()
 
+    if ("X${MAKE_EXECUTABLE}" STREQUAL "X")
+        set(MAKE_EXECUTABLE make)
+    endif ()
+
     if ("${DEP_PROJECT}" STREQUAL "")
         set(DEP_PROJECT ${ARG_NAME})
     endif ()

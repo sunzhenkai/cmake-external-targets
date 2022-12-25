@@ -12,7 +12,7 @@ function delete_target() {
 
 if [ "X$1" == "X" ]; then
   for f in *; do
-    [ -e "$f/check.cmake" ] && {
+    [ -e "$f/load.cmake" ] && {
       delete_target "$f"
     }
   done
