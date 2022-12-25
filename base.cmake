@@ -41,6 +41,10 @@ macro(SetBasicVariables)
     set(DEP_PREFIX ${DEPS_PREFIX}/${DEP_NAME})
     find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 
+    if ("X${MAKE_EXECUTABLE}" STREQUAL "X")
+        set(MAKE_EXECUTABLE make)
+    endif ()
+
     if ("${DEP_PROJECT}" STREQUAL "")
         set(DEP_PROJECT ${ARG_NAME})
     endif ()
