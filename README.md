@@ -1,6 +1,6 @@
 # Dependencies
 ```shell
-cmake >= 3.20
+cmake >= 3.24
 ```
 
 # Install
@@ -8,3 +8,5 @@ cmake >= 3.20
 # ubuntu
 sudo apt install gcc g++ make automake autoconf libtool
 ```
+
+# Usage

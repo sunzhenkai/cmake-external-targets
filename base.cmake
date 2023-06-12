@@ -120,8 +120,7 @@ function(MakeDepReady)
         string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
-                ExternalProject_Add(
-                \${DEP_NAME}_build
+                ExternalProject_Add(\${DEP_NAME}_build
                 PREFIX \${DEP_PREFIX}
                 INSTALL_DIR \${DEP_INSTALL_DIR}
                 GIT_REPOSITORY \${DEP_GIT_REPOSITORY}
