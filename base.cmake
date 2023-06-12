@@ -156,7 +156,7 @@ function(MakeDepReady)
     # TODO 遍历 pc 文件
     if (EXISTS "${DEP_INSTALL_DIR}/lib/pkgconfig/${DEP_NAME}.pc")
         set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
-        pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET ${DEP_NAME})
+        pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET GLOBAL ${DEP_NAME})
         message(STATUS "[AddPKGTarget] PKG_${DEP_UNAME}")
     endif ()
 endfunction(MakeDepReady)
