@@ -12,4 +12,4 @@ MakeDepReady(VERSION v1.49.2
         -DgRPC_RE2_PROVIDER=package
         -DgRPC_SSL_PROVIDER=package
         -DgRPC_ZLIB_PROVIDER=package
-        DEPENDS re2)
+        DEPENDS re2_lib)

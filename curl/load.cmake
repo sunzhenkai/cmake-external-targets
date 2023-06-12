@@ -4,5 +4,5 @@ include(${CMAKE_CURRENT_LIST_DIR}/../openssl/load.cmake)
 
 MakeDepReady(
         VERSION curl-7_86_0
-        DEPENDS openssl
+        DEPENDS openssl_lib
 )

@@ -8,5 +8,5 @@ MakeDepReady(VERSION v2.6.4 AUTHOR westes
         BUILD_IN_SOURCE TRUE
         BUILD_COMMAND env PATH=$ENV{PATH} ${MAKE_EXECUTABLE} -j -C <SOURCE_DIR>
         INSTALL_COMMAND ${MAKE_EXECUTABLE} -j -C <SOURCE_DIR> install PREFIX=<INSTALL_DIR> prefix=<INSTALL_DIR>
-        DEPENDS help2man textinfo
+        DEPENDS help2man_lib textinfo_lib
         )

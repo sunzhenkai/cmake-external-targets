@@ -6,9 +6,5 @@ MakeDepReady(
         VERSION 1.23
         AUTHOR google
         URL https://wii-share.oss-cn-beijing.aliyuncs.com/cpp/external/leveldb-submodule-1.23.tar.gz
-        DEPENDS snappy
+        DEPENDS snappy_lib
 )
-
-#find_package(leveldb REQUIRED)
-#find_package(Snappy REQUIRED)
-#target_link_libraries(leveldb Snappy::snappy)

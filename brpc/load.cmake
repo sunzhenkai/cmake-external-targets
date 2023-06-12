@@ -9,7 +9,6 @@ MakeDepReady(
         VERSION 1.3.0
         AUTHOR apache
         PROJECT incubator-brpc
-        DEPENDS gflags leveldb protobuf openssl
+        DEPENDS gflags_lib leveldb_lib protobuf_lib openssl_lib
         EXTRA_ARGS -DWITH_SNAPPY=ON
-        SET_PKG_CONFIG_PATH
 )
