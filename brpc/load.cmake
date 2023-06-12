@@ -11,4 +11,5 @@ MakeDepReady(
         PROJECT incubator-brpc
         DEPENDS gflags leveldb protobuf openssl
         EXTRA_ARGS -DWITH_SNAPPY=ON
+        SET_PKG_CONFIG_PATH
 )
