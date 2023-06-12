@@ -113,12 +113,15 @@ function(MakeDepReady)
         if ("${ARG_URL}" STREQUAL "")
             set(ARG_URL "${GITHUB_DOWNLOAD_URL}")
         endif ()
+        # 替换 URL 中的变量
+        cmake_language(EVAL CODE "set(ARG_URL ${ARG_URL})")
     endif ()
 
     if (ARG_DISABLE_CONFIGURE)
         set(ARG_CONFIGURE_COMMAND "\"\"")
     endif ()
     if (REBUILD_NEEDED)
+        message(STATUS "[MakeDepReady] download url of ${DEP_NAME} is ${ARG_URL}")
         string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
