@@ -1,5 +1,4 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-# https://github.com/abseil/abseil-cpp
 
 if (BUILD_GCC)
     MakeDepReady(
