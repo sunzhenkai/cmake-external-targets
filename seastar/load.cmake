@@ -1,5 +1,6 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../hwloc/load.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../numactl/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../fmt/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../boost/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/load.cmake)
@@ -7,6 +8,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/../yaml-cpp/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../c-ares/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../lz4/load.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../cryptopp/load.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../valgrind/load.cmake)
 # https://github.com/scylladb/seastar
 
 MakeDepReady(
@@ -26,5 +28,5 @@ MakeDepReady(
         -DSeastar_LD_FLAGS=-pthread
         -DSeastar_DEFERRED_ACTION_REQUIRE_NOEXCEPT=OFF
         -DCMAKE_CXX_STANDARD=20
-        DEPENDS fmt_lib boost_lib protobuf_lib yaml-cpp_lib c-ares_lib lz4_lib cryptopp_lib hwloc_lib
+        DEPENDS fmt_lib boost_lib protobuf_lib yaml-cpp_lib c-ares_lib lz4_lib cryptopp_lib hwloc_lib numactl_lib valgrind_lib
 )
