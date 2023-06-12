@@ -9,7 +9,7 @@ cmake >= 3.24
 sudo apt install gcc g++ make automake autoconf libtool autopoint
 
 # centos
-sudo yum install gettext-devel
+sudo yum install gettext-devel xfsprogs-devel systemtap-sdt-devel
 ```
 
 # Usage

@@ -6,3 +6,6 @@ clean:
 
 remove-prefix:
 	@rm -rf /tmp/cpp-external-prefix
+
+install-dependencies:
+	@bash scripts/install_dependencies.sh

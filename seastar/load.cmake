@@ -12,14 +12,19 @@ include(${CMAKE_CURRENT_LIST_DIR}/../valgrind/load.cmake)
 # https://github.com/scylladb/seastar
 
 MakeDepReady(
-        VERSION seastar-22.11.0
-        AUTHOR scylladb
-        EXTRA_ARGS -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        # non-official git repo, fix apps compile error
+        VERSION v0.0.1
+        AUTHOR sunzhenkai
+        # seastar official git repo (github)
+        #        VERSION seastar-22.11.0
+        #        AUTHOR scylladb
+        EXTRA_ARGS
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DBoost_USE_STATIC_LIBS=OFF
         -DBoost_NO_BOOST_CMAKE=ON
         -DBoost_NO_SYSTEM_PATHS=TRUE
         -DSeastar_INSTALL=ON
-        -DSeastar_APPS=ON
+        -DSeastar_APPS=OFF
         -DSeastar_DEMOS=OFF
         -DSeastar_DOCS=OFF
         -DSeastar_TESTING=OFF
