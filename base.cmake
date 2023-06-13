@@ -1,18 +1,35 @@
-set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
-set(DEPS_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
-option(BUILD_DEPS "build and install deps" ON)
-option(BUILD_GCC "build gcc" OFF)
+# 外置定义
+# DEPS_INSTALL_DIR, DEPS_BUILD_PREFIX, BUILD_DEPS, BUILD_GCC
+# CMAKE_C_COMPILER, CMAKE_CXX_COMPILER, CFLAGS, CXXFLAGS
+set(EXTERN_VARIABLES
+        DEPS_INSTALL_DIR DEPS_BUILD_PREFIX BUILD_DEPS BUILD_GCC VERSION
+        CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS)
+macro(InitVariables)
+    set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
+    set(DEPS_BUILD_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
+    option(BUILD_DEPS "build and install deps" ON)
+    option(BUILD_GCC "build gcc" OFF)
 
-include(FetchContent)
-set(FETCHCONTENT_BASE_DIR "${DEPS_PREFIX}")
-include(ExternalProject)
-find_package(PkgConfig REQUIRED)
+    include(FetchContent)
+    set(FETCHCONTENT_BASE_DIR "${DEPS_BUILD_PREFIX}")
+    include(ExternalProject)
+    find_package(PkgConfig REQUIRED)
 
-set(ENV{CC} ${CMAKE_C_COMPILER})
-set(ENV{CXX} ${CMAKE_CXX_COMPILER})
-set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
-set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
-find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
+    set(ENV{CC} ${CMAKE_C_COMPILER})
+    set(ENV{CXX} ${CMAKE_CXX_COMPILER})
+    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
+    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
+    find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
+    message(STATUS "[InitVariables] Configure info. [DEPS_INSTALL_DIR=${DEPS_INSTALL_DIR}"
+            ", DEPS_BUILD_PREFIX=${DEPS_BUILD_PREFIX}"
+            ", BUILD_DEPS=${BUILD_DEPS}"
+            ", BUILD_GCC=${BUILD_GCC}"
+            ", CMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+            ", CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+            ", CFLAGS=${CFLAGS}"
+            ", CXXFLAGS=${CXXFLAGS}"
+            "]")
+endmacro(InitVariables)
 
 function(GetCMakeArgs)
     #string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
@@ -29,6 +46,7 @@ function(GetCMakeArgs)
             -DBUILD_SHARED_LIB=OFF PARENT_SCOPE)
 endfunction(GetCMakeArgs)
 
+
 macro(SetBasicVariables)
     cmake_parse_arguments(ARG "" "NAME;VERSION;AUTHOR;PROJECT" "" ${ARGN})
     if ("${DEPS_INSTALL_DIR}" STREQUAL "")
@@ -40,7 +58,7 @@ macro(SetBasicVariables)
     string(TOUPPER ${DEP_NAME} DEP_UNAME)
     set(DEP_AUTHOR ${ARG_AUTHOR})
     set(DEP_PROJECT ${ARG_PROJECT})
-    set(DEP_PREFIX ${DEPS_PREFIX}/${DEP_NAME})
+    set(DEP_PREFIX ${DEPS_BUILD_PREFIX}/${DEP_NAME})
     if ("X${${DEP_UNAME}_INSTALL_DIR}" STREQUAL "X")
         set(DEP_INSTALL_DIR ${DEPS_INSTALL_DIR}/${ARG_NAME})
     else ()
@@ -65,7 +83,6 @@ macro(SetBasicVariables)
 
     set(ENV{${DEP_UNAME}_ROOT_DIR} ${DEP_INSTALL_DIR})
     set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
-    set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
     set(DEPS_LIST ${DEPS_LIST} ${DEP_NAME} PARENT_SCOPE)
 endmacro(SetBasicVariables)
 
@@ -91,9 +108,11 @@ macro(SetParentScopeVariables)
     set(ENV{${DEP_UNAME}_ROOT_DIR} ${DEP_INSTALL_DIR})
     set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
     set(${DEP_UNAME}_INCLUDE_DIR ${DEP_INSTALL_DIR}/include PARENT_SCOPE)
+    set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
 endmacro(SetParentScopeVariables)
 
 function(MakeDepReady)
+    InitVariables()
     set(FLAG_OPT "FROM_GIT;DISABLE_CONFIGURE;ADD_BIN_PATH")
     set(ONE_VALUE_OPT "VERSION;AUTHOR;PROJECT;URL;BUILD_IN_SOURCE")
     set(MUL_VALUE_OPT "DEPENDS;EXTRA_ARGS;BUILD_COMMAND;INSTALL_COMMAND;CONFIGURE_COMMAND")
@@ -122,7 +141,10 @@ function(MakeDepReady)
     endif ()
     if (REBUILD_NEEDED)
         message(STATUS "[MakeDepReady] download url of ${DEP_NAME} is ${ARG_URL}")
-        string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
+        #        string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
+        #                LIST_SEPARATOR |
+        string(REPLACE ";" "\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
+        message(STATUS "CKPT PREFIX=${CMAKE_PREFIX_PATH_STR}")
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
                 ExternalProject_Add(\${DEP_NAME}_build
@@ -133,7 +155,6 @@ function(MakeDepReady)
                 GIT_SUBMODULES_RECURSE TRUE
                 GIT_SHALLOW TRUE
                 URL \${ARG_URL}
-                LIST_SEPARATOR |
                 CMAKE_ARGS \${CMAKE_ARGS} \${ARG_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=\${CMAKE_PREFIX_PATH_STR}
                 DEPENDS \${ARG_DEPENDS}
                 DOWNLOAD_EXTRACT_TIMESTAMP TRUE
@@ -148,16 +169,9 @@ function(MakeDepReady)
         endif ()
         add_custom_target(${DEP_NAME}_build echo "${DEP_NAME} exists with version ${DEP_VERSION}.")
     endif ()
-    add_custom_target(${DEP_NAME}_lib echo ${DEP_VERSION} > ${DEP_INSTALL_DIR}/VERSION DEPENDS ${DEP_NAME}_build)
-    SetParentScopeVariables()
+    add_custom_target(${DEP_NAME}_lib ALL COMMAND echo ${DEP_VERSION} > ${DEP_INSTALL_DIR}/VERSION DEPENDS ${DEP_NAME}_build)
     if (ARG_ADD_BIN_PATH)
         set(ENV{PATH} "${DEP_INSTALL_DIR}/bin:$ENV{PATH}")
-    endif ()
-    # TODO 遍历 pc 文件
-    if (EXISTS "${DEP_INSTALL_DIR}/lib/pkgconfig/${DEP_NAME}.pc")
-        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
-        pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET GLOBAL ${DEP_NAME})
-        message(STATUS "[AddPKGTarget] PKG_${DEP_UNAME}")
     endif ()
 endfunction(MakeDepReady)
 
@@ -172,3 +186,55 @@ macro(UnsetVariables)
     unset(DEP_UNAME)
     unset(CMAKE_ARGS)
 endmacro(UnsetVariables)
+
+macro(NotEmpty DATA)
+    if ("${${DATA}}" STREQUAL "")
+        message(FATAL_ERROR "[MakeReadyNow] ${DATA} should not be empty.")
+    endif ()
+endmacro(NotEmpty)
+
+# load functions
+function(MakeReadyNow)
+    # 处理参数
+    set(ONE_VALUE_OPT "PATH;VERSION")
+    cmake_parse_arguments(ARG "" "${ONE_VALUE_OPT}" "" ${ARGN})
+    NotEmpty(ARG_PATH)
+    NotEmpty(ARG_VERSION)
+    # 初始化变量
+    set(VERSION ${ARG_VERSION})
+    set(CMAKE_DEFS)
+    get_filename_component(DEP_NAME ${ARG_PATH} NAME)
+    string(TOUPPER ${DEP_NAME} DEP_UNAME)
+    InitVariables()
+    SetBasicVariables(NAME ${DEP_NAME} VERSION ${ARG_VERSION})
+    CheckVersion()
+    if (NOT REBUILD_NEEDED)
+        message(STATUS "[MakeReadyNow] target already exists, skip build. [target=${DEP_NAME}, version=${VERSION}]")
+    else ()
+        foreach (I IN LISTS EXTERN_VARIABLES)
+            set(CMAKE_DEFS ${CMAKE_DEFS} -D${I}=${${I}})
+        endforeach ()
+        set(BUILD_DIR ${DEPS_BUILD_PREFIX}/${DEP_NAME}/build)
+        file(MAKE_DIRECTORY ${BUILD_DIR})
+        # configure
+        string(REPLACE ";" "\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
+        execute_process(
+                COMMAND ${CMAKE_COMMAND} ${CMAKE_DEFS} -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_STR} ${ARG_PATH}
+                WORKING_DIRECTORY ${BUILD_DIR}
+        )
+        # build
+        execute_process(
+                COMMAND ${CMAKE_COMMAND} --build ${BUILD_DIR} -- -j
+        )
+        #    file(REMOVE_RECURSE ${BUILD_DIR})
+    endif ()
+    # TODO 遍历 pc 文件
+    if (EXISTS "${DEP_INSTALL_DIR}/lib/pkgconfig/${DEP_NAME}.pc")
+        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+        pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET GLOBAL QUIET ${DEP_NAME})
+        message(STATUS "[MakeReadyNow::AddTarget] PkgConfig::PKG_${DEP_UNAME}")
+    endif ()
+    SetParentScopeVariables()
+    #    unset(DEP_NAME)
+    #    unset(DEP_UNAME)
+endfunction(MakeReadyNow)

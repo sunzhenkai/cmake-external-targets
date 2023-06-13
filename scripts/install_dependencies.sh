@@ -10,11 +10,17 @@ else
 fi
 
 debian_packages=(
+    gcc
+    g++
+    make
+    cmake
+    automake
+    autoconf
+    libtool
+    autopoint
     ninja-build
     xfslibs-dev
-    make
     systemtap-sdt-dev
-    cmake
     pkg-config
 )
 
