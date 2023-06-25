@@ -4,8 +4,6 @@ SET(CMAKE_CXX_STANDARD 17)
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 
 # https://github.com/scylladb/seastar
-
-
 MakeDepReady(
         # non-official git repo, fix apps compile error
         VERSION ${VERSION}

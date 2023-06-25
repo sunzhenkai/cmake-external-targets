@@ -17,8 +17,10 @@ macro(InitVariables)
 
     set(ENV{CC} ${CMAKE_C_COMPILER})
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
-    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
-    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
+    set(ENV{CFLAGS} "$ENV{CFLAGS}")
+#    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
+    set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
+#    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
     find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
     message(STATUS "[InitVariables] Configure info. [DEPS_INSTALL_DIR=${DEPS_INSTALL_DIR}"
             ", DEPS_BUILD_PREFIX=${DEPS_BUILD_PREFIX}"
@@ -81,9 +83,9 @@ macro(SetBasicVariables)
     set(DEP_GIT_TAG ${DEP_VERSION})
     GetCMakeArgs()
 
-    set(ENV{${DEP_UNAME}_ROOT_DIR} ${DEP_INSTALL_DIR})
-    set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
-    set(DEPS_LIST ${DEPS_LIST} ${DEP_NAME} PARENT_SCOPE)
+    #    set(ENV{${DEP_UNAME}_ROOT_DIR} ${DEP_INSTALL_DIR})
+    #    set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
+    #    set(DEPS_LIST ${DEPS_LIST} ${DEP_NAME} PARENT_SCOPE)
 endmacro(SetBasicVariables)
 
 function(CheckVersion)
@@ -109,14 +111,18 @@ macro(SetParentScopeVariables)
     set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
     set(${DEP_UNAME}_INCLUDE_DIR ${DEP_INSTALL_DIR}/include PARENT_SCOPE)
     set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+    set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${DEP_INSTALL_DIR}/lib -L${DEP_INSTALL_DIR}/lib64")
+    set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{CPPFLAGS} "$ENV{CPPFLAGS} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib:${DEP_INSTALL_DIR}/lib64:$ENV{LD_LIBRARY_PATH}")
 endmacro(SetParentScopeVariables)
 
 function(MakeDepReady)
-    InitVariables()
     set(FLAG_OPT "FROM_GIT;DISABLE_CONFIGURE;ADD_BIN_PATH")
     set(ONE_VALUE_OPT "VERSION;AUTHOR;PROJECT;URL;BUILD_IN_SOURCE")
     set(MUL_VALUE_OPT "DEPENDS;EXTRA_ARGS;BUILD_COMMAND;INSTALL_COMMAND;CONFIGURE_COMMAND")
     cmake_parse_arguments(ARG "${FLAG_OPT}" "${ONE_VALUE_OPT}" "${MUL_VALUE_OPT}" ${ARGN})
+    InitVariables()
     get_filename_component(DEP_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
     if (DEFINED ${DEP_NAME}_IMPORT)
         return()
@@ -143,8 +149,8 @@ function(MakeDepReady)
         message(STATUS "[MakeDepReady] download url of ${DEP_NAME} is ${ARG_URL}")
         #        string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         #                LIST_SEPARATOR |
+        #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
         string(REPLACE ";" "\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
-        message(STATUS "CKPT PREFIX=${CMAKE_PREFIX_PATH_STR}")
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
                 ExternalProject_Add(\${DEP_NAME}_build

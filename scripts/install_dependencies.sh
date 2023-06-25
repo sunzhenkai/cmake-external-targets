@@ -19,9 +19,10 @@ debian_packages=(
     libtool
     autopoint
     ninja-build
+    pkg-config
     xfslibs-dev
     systemtap-sdt-dev
-    pkg-config
+    libgnutls28-dev
 )
 
 fedora_packages=(
