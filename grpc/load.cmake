@@ -1,6 +1,2 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../absl/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../re2/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../zlib/load.cmake)
 MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION v1.49.2)

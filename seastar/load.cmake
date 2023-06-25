@@ -1,13 +1,2 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../hwloc/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../numactl/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../fmt/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../boost/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../yaml-cpp/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../cares/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../lz4/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../cryptopp/load.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/../valgrind/load.cmake)
-
 MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION v0.0.1)
