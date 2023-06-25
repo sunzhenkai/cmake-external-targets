@@ -3,7 +3,7 @@
 # CMAKE_C_COMPILER, CMAKE_CXX_COMPILER, CFLAGS, CXXFLAGS
 set(EXTERN_VARIABLES
         DEPS_INSTALL_DIR DEPS_BUILD_PREFIX BUILD_DEPS BUILD_GCC VERSION
-        CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS)
+        CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS C_INCLUDE_PATH CPLUS_INCLUDE_PATH)
 find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 macro(InitVariables)
     set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
@@ -19,6 +19,8 @@ macro(InitVariables)
     set(ENV{CC} ${CMAKE_C_COMPILER})
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
     set(ENV{CFLAGS} "$ENV{CFLAGS}")
+    set(ENV{C_INCLUDE_PATH} "$ENV{C_INCLUDE_PATH}")
+    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH}")
     #    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
     set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
     #    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
@@ -29,6 +31,8 @@ macro(InitVariables)
             ", CMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
             ", CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
             ", CFLAGS=${CFLAGS}"
+            ", C_INCLUDE_PATH=${C_INCLUDE_PATH}"
+            ", CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}"
             ", CXXFLAGS=${CXXFLAGS}"
             "]")
 endmacro(InitVariables)
@@ -123,6 +127,8 @@ macro(SetParentScopeVariables)
         set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib64:$ENV{LD_LIBRARY_PATH}")
     endif ()
     set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{C_INCLUDE_PATH} "$ENV{C_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
     set(ENV{CPPFLAGS} "$ENV{CPPFLAGS} -I${DEP_INSTALL_DIR}/include")
     # 设置 bin 到 PATH
     if (EXISTS "${DEP_INSTALL_DIR}/bin")
@@ -159,7 +165,6 @@ function(MakeDepReady)
         set(ARG_CONFIGURE_COMMAND "\"\"")
     endif ()
     if (REBUILD_NEEDED)
-        message(STATUS "DDD LDFLAGS=$ENV{LDFLAGS}, DEP=${DEP_NAME}")
         message(STATUS "[MakeDepReady] download dependency. [DEP_NAME=${DEP_NAME}, URL=${ARG_URL}]")
         string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
@@ -168,6 +173,8 @@ function(MakeDepReady)
             set(ENV{LD_LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
             set(ENV{LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
             set(ENV{CFLAGS} \$ENV{CFLAGS})
+            set(ENV{C_INCLUDE_PATH} \$ENV{C_INCLUDE_PATH})
+            set(ENV{CPLUS_INCLUDE_PATH} \$ENV{CPLUS_INCLUDE_PATH})
             set(ENV{CPPFLAGS} \$ENV{CPPFLAGS})
             set(ENV{LDFLAGS} \$ENV{LDFLAGS})
             ExternalProject_Add(\${DEP_NAME}_build
