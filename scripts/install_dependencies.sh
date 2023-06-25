@@ -30,6 +30,9 @@ fedora_packages=(
 
 # centos7 & centos8 common packages
 redhat_packages=(
+   gettext-devel
+   xfsprogs-devel
+   systemtap-sdt-devel
 )
 
 centos7_packages=(
