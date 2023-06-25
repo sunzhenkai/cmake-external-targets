@@ -13,7 +13,6 @@ debian_packages=(
     gcc
     g++
     make
-    cmake
     automake
     autoconf
     libtool
