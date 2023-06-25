@@ -128,7 +128,7 @@ macro(SetParentScopeVariables)
     endif ()
     set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
 #    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
-    set(ENV{CPATH} "$ENV{CPATH} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{CPATH} "$ENV{CPATH}:${DEP_INSTALL_DIR}/include")
     set(ENV{CPPFLAGS} "$ENV{CPPFLAGS} -I${DEP_INSTALL_DIR}/include")
     # 设置 bin 到 PATH
     if (EXISTS "${DEP_INSTALL_DIR}/bin")
