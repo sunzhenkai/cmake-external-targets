@@ -11,7 +11,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/../protobuf/load.cmake)
 # https://github.com/apache/incubator-brpc
 MakeDepReady(
         VERSION ${VERSION}
-        AUTHOR apache
+#        AUTHOR apache
+        AUTHOR sunzhenkai
         PROJECT incubator-brpc
         EXTRA_ARGS -DWITH_SNAPPY=ON
 )
