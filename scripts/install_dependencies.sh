@@ -10,12 +10,19 @@ else
 fi
 
 debian_packages=(
-    ninja-build
-    xfslibs-dev
+    gcc
+    g++
     make
-    systemtap-sdt-dev
     cmake
+    automake
+    autoconf
+    libtool
+    autopoint
+    ninja-build
     pkg-config
+    xfslibs-dev
+    systemtap-sdt-dev
+    libgnutls28-dev
 )
 
 fedora_packages=(

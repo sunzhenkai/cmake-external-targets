@@ -1,4 +1,2 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-# https://github.com/gperftools/gperftools
-
-MakeDepReady(VERSION gperftools-2.10)
+MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION gperftools-2.10)

@@ -1,4 +1,2 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
-# https://github.com/abseil/abseil-cpp
-
-MakeDepReady(VERSION cares-1_18_1 AUTHOR c-ares PROJECT c-ares)
+MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION cares-1_18_1)

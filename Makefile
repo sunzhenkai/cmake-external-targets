@@ -9,3 +9,6 @@ remove-prefix:
 
 install-dependencies:
 	@bash scripts/install_dependencies.sh
+
+resolve:
+	@bash scripts/install_dependencies.sh
