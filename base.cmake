@@ -159,6 +159,10 @@ function(MakeDepReady)
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
             set(ENV{LD_LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
+            set(ENV{LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
+            set(ENV{CFLAGS} \$ENV{CFLAGS})
+            set(ENV{CPPFLAGS} \$ENV{CPPFLAGS})
+            set(ENV{LDFLAGS} \$ENV{LDFLAGS})
             ExternalProject_Add(\${DEP_NAME}_build
                 PREFIX \${DEP_PREFIX}
                 INSTALL_DIR \${DEP_INSTALL_DIR}
