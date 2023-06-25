@@ -20,7 +20,6 @@ macro(InitVariables)
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
     set(ENV{CFLAGS} "$ENV{CFLAGS}")
     set(ENV{CPATH} "$ENV{CPATH}")
-#    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH}")
     #    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
     set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
     #    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
@@ -32,7 +31,6 @@ macro(InitVariables)
             ", CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
             ", CFLAGS=${CFLAGS}"
             ", CPATH=${CPATH}"
-#            ", CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}"
             ", CXXFLAGS=${CXXFLAGS}"
             "]")
 endmacro(InitVariables)
@@ -120,14 +118,13 @@ macro(SetParentScopeVariables)
     set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
     if (EXISTS "${DEP_INSTALL_DIR}/lib")
         set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${DEP_INSTALL_DIR}/lib")
-        set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib:$ENV{LD_LIBRARY_PATH}")
+        set(ENV{LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib:$ENV{LIBRARY_PATH}")
     endif ()
     if (EXISTS "${DEP_INSTALL_DIR}/lib64")
         set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${DEP_INSTALL_DIR}/lib64")
-        set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib64:$ENV{LD_LIBRARY_PATH}")
+        set(ENV{LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib64:$ENV{LIBRARY_PATH}")
     endif ()
     set(ENV{CFLAGS} "$ENV{CFLAGS}")
-#    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
     set(ENV{CPATH} "$ENV{CPATH}:${DEP_INSTALL_DIR}/include")
     set(ENV{CPPFLAGS} "$ENV{CPPFLAGS}")
     # 设置 bin 到 PATH
@@ -167,11 +164,10 @@ function(MakeDepReady)
     if (REBUILD_NEEDED)
         message(STATUS "[MakeDepReady] download dependency. [DEP_NAME=${DEP_NAME}, URL=${ARG_URL}]")
         string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
-        #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
+        #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LIBRARY_PATH=\$ENV{LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
-            set(ENV{LD_LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
-            set(ENV{LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
+            set(ENV{LIBRARY_PATH} \$ENV{LIBRARY_PATH})
             set(ENV{CFLAGS} \$ENV{CFLAGS})
             set(ENV{CPATH} \$ENV{CPATH})
             set(ENV{CPPFLAGS} \$ENV{CPPFLAGS})
