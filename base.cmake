@@ -4,6 +4,7 @@
 set(EXTERN_VARIABLES
         DEPS_INSTALL_DIR DEPS_BUILD_PREFIX BUILD_DEPS BUILD_GCC VERSION
         CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS)
+find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 macro(InitVariables)
     set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
     set(DEPS_BUILD_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
@@ -18,11 +19,10 @@ macro(InitVariables)
     set(ENV{CC} ${CMAKE_C_COMPILER})
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
     set(ENV{CFLAGS} "$ENV{CFLAGS}")
-#    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
+    #    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
     set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
-#    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
-    find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
-    message(STATUS "[InitVariables] Configure info. [DEPS_INSTALL_DIR=${DEPS_INSTALL_DIR}"
+    #    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
+    message(STATUS "[InitVariables] Configure info. [DEP_NAME=${DEP_NAME}, DEPS_INSTALL_DIR=${DEPS_INSTALL_DIR}"
             ", DEPS_BUILD_PREFIX=${DEPS_BUILD_PREFIX}"
             ", BUILD_DEPS=${BUILD_DEPS}"
             ", BUILD_GCC=${BUILD_GCC}"
@@ -108,13 +108,20 @@ endfunction(CheckVersion)
 macro(SetParentScopeVariables)
     set(${ARG_NAME}_IMPORT TRUE PARENT_SCOPE)
     set(ENV{${DEP_UNAME}_ROOT_DIR} ${DEP_INSTALL_DIR})
+    set(${DEP_NAME}_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
+    set(${DEP_UNAME}_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
     set(${DEP_UNAME}_ROOT_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
+    set(${DEP_UNAME}_INSTALL_DIR ${DEP_INSTALL_DIR} PARENT_SCOPE)
     set(${DEP_UNAME}_INCLUDE_DIR ${DEP_INSTALL_DIR}/include PARENT_SCOPE)
     set(CMAKE_PREFIX_PATH ${DEP_INSTALL_DIR} ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
     set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${DEP_INSTALL_DIR}/lib -L${DEP_INSTALL_DIR}/lib64")
     set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
     set(ENV{CPPFLAGS} "$ENV{CPPFLAGS} -I${DEP_INSTALL_DIR}/include")
     set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib:${DEP_INSTALL_DIR}/lib64:$ENV{LD_LIBRARY_PATH}")
+    # 设置 bin 到 PATH
+    if (EXISTS "${DEP_INSTALL_DIR}/bin")
+        set(ENV{PATH} "${DEP_INSTALL_DIR}/bin:$ENV{PATH}")
+    endif ()
 endmacro(SetParentScopeVariables)
 
 function(MakeDepReady)
@@ -146,11 +153,9 @@ function(MakeDepReady)
         set(ARG_CONFIGURE_COMMAND "\"\"")
     endif ()
     if (REBUILD_NEEDED)
-        message(STATUS "[MakeDepReady] download url of ${DEP_NAME} is ${ARG_URL}")
-        #        string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
-        #                LIST_SEPARATOR |
+        message(STATUS "[MakeDepReady] download dependency. [DEP_NAME=${DEP_NAME}, URL=${ARG_URL}]")
+        string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
-        string(REPLACE ";" "\;" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
                 ExternalProject_Add(\${DEP_NAME}_build
@@ -161,6 +166,7 @@ function(MakeDepReady)
                 GIT_SUBMODULES_RECURSE TRUE
                 GIT_SHALLOW TRUE
                 URL \${ARG_URL}
+                LIST_SEPARATOR |
                 CMAKE_ARGS \${CMAKE_ARGS} \${ARG_EXTRA_ARGS} -DCMAKE_PREFIX_PATH=\${CMAKE_PREFIX_PATH_STR}
                 DEPENDS \${ARG_DEPENDS}
                 DOWNLOAD_EXTRACT_TIMESTAMP TRUE
@@ -227,18 +233,26 @@ function(MakeReadyNow)
         execute_process(
                 COMMAND ${CMAKE_COMMAND} ${CMAKE_DEFS} -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_STR} ${ARG_PATH}
                 WORKING_DIRECTORY ${BUILD_DIR}
+                RESULT_VARIABLE STATUS
         )
+        if (NOT "${STATUS}" EQUAL "0")
+            message(FATAL_ERROR "[MakeReadyNow::Configure] configure failed. [DEP_NAME=${DEP_NAME}]")
+        endif ()
         # build
         execute_process(
                 COMMAND ${CMAKE_COMMAND} --build ${BUILD_DIR} -- -j
+                RESULT_VARIABLE STATUS
         )
+        if (NOT "${STATUS}" EQUAL "0")
+            message(FATAL_ERROR "[MakeReadyNow::Build] build failed. [DEP_NAME=${DEP_NAME}]")
+        endif ()
         #    file(REMOVE_RECURSE ${BUILD_DIR})
     endif ()
     # TODO 遍历 pc 文件
     if (EXISTS "${DEP_INSTALL_DIR}/lib/pkgconfig/${DEP_NAME}.pc")
-        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH} ")
         pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET GLOBAL QUIET ${DEP_NAME})
-        message(STATUS "[MakeReadyNow::AddTarget] PkgConfig::PKG_${DEP_UNAME}")
+        message(STATUS "[MakeReadyNow::AddTarget] PkgConfig::PKG_${DEP_UNAME} ")
     endif ()
     SetParentScopeVariables()
     #    unset(DEP_NAME)
