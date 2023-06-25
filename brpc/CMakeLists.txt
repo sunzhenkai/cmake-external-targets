@@ -9,8 +9,8 @@ message(STATUS "CCC LDFLAGS=$ENV{LDFLAGS}, DEP=${DEP_NAME}")
 # https://github.com/apache/incubator-brpc
 MakeDepReady(
         VERSION ${VERSION}
-#        AUTHOR apache
-        AUTHOR sunzhenkai
+        AUTHOR apache
+        #        AUTHOR sunzhenkai
         PROJECT incubator-brpc
         EXTRA_ARGS -DWITH_SNAPPY=ON
 )
