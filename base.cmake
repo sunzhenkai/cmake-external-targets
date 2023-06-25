@@ -3,7 +3,7 @@
 # CMAKE_C_COMPILER, CMAKE_CXX_COMPILER, CFLAGS, CXXFLAGS
 set(EXTERN_VARIABLES
         DEPS_INSTALL_DIR DEPS_BUILD_PREFIX BUILD_DEPS BUILD_GCC VERSION
-        CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS C_INCLUDE_PATH CPLUS_INCLUDE_PATH)
+        CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS CPATH)
 find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 macro(InitVariables)
     set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
@@ -19,8 +19,8 @@ macro(InitVariables)
     set(ENV{CC} ${CMAKE_C_COMPILER})
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
     set(ENV{CFLAGS} "$ENV{CFLAGS}")
-    set(ENV{C_INCLUDE_PATH} "$ENV{C_INCLUDE_PATH}")
-    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH}")
+    set(ENV{CPATH} "$ENV{CPATH}")
+#    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH}")
     #    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
     set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
     #    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
@@ -31,8 +31,8 @@ macro(InitVariables)
             ", CMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
             ", CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
             ", CFLAGS=${CFLAGS}"
-            ", C_INCLUDE_PATH=${C_INCLUDE_PATH}"
-            ", CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}"
+            ", CPATH=${CPATH}"
+#            ", CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}"
             ", CXXFLAGS=${CXXFLAGS}"
             "]")
 endmacro(InitVariables)
@@ -127,8 +127,8 @@ macro(SetParentScopeVariables)
         set(ENV{LD_LIBRARY_PATH} "${DEP_INSTALL_DIR}/lib64:$ENV{LD_LIBRARY_PATH}")
     endif ()
     set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
-    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
-    set(ENV{C_INCLUDE_PATH} "$ENV{C_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
+#    set(ENV{CPLUS_INCLUDE_PATH} "$ENV{CPLUS_INCLUDE_PATH} -I${DEP_INSTALL_DIR}/include")
+    set(ENV{CPATH} "$ENV{CPATH} -I${DEP_INSTALL_DIR}/include")
     set(ENV{CPPFLAGS} "$ENV{CPPFLAGS} -I${DEP_INSTALL_DIR}/include")
     # 设置 bin 到 PATH
     if (EXISTS "${DEP_INSTALL_DIR}/bin")
@@ -173,8 +173,7 @@ function(MakeDepReady)
             set(ENV{LD_LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
             set(ENV{LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
             set(ENV{CFLAGS} \$ENV{CFLAGS})
-            set(ENV{C_INCLUDE_PATH} \$ENV{C_INCLUDE_PATH})
-            set(ENV{CPLUS_INCLUDE_PATH} \$ENV{CPLUS_INCLUDE_PATH})
+            set(ENV{CPATH} \$ENV{CPATH})
             set(ENV{CPPFLAGS} \$ENV{CPPFLAGS})
             set(ENV{LDFLAGS} \$ENV{LDFLAGS})
             ExternalProject_Add(\${DEP_NAME}_build
