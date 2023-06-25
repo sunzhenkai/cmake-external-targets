@@ -158,7 +158,8 @@ function(MakeDepReady)
         #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
-                ExternalProject_Add(\${DEP_NAME}_build
+            set(ENV{LD_LIBRARY_PATH} \$ENV{LD_LIBRARY_PATH})
+            ExternalProject_Add(\${DEP_NAME}_build
                 PREFIX \${DEP_PREFIX}
                 INSTALL_DIR \${DEP_INSTALL_DIR}
                 GIT_REPOSITORY \${DEP_GIT_REPOSITORY}
@@ -171,10 +172,10 @@ function(MakeDepReady)
                 DEPENDS \${ARG_DEPENDS}
                 DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                 BUILD_IN_SOURCE \${ARG_BUILD_IN_SOURCE}
-                CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LD_LIBRARY_PATH=\$ENV{LD_LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
+                CONFIGURE_COMMAND ${ARG_CONFIGURE_COMMAND}
                 BUILD_COMMAND \${ARG_BUILD_COMMAND}
                 INSTALL_COMMAND \${ARG_INSTALL_COMMAND}
-        )")
+            )")
     else ()
         if (NOT EXISTS ${DEP_INSTALL_DIR})
             message(FATAL_ERROR "${DEP_NAME} install failed.")
