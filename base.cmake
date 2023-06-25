@@ -5,6 +5,7 @@ set(EXTERN_VARIABLES
         DEPS_INSTALL_DIR DEPS_BUILD_PREFIX BUILD_DEPS BUILD_GCC VERSION
         CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS CPATH)
 find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
+find_package(PkgConfig REQUIRED)
 macro(InitVariables)
     set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
     set(DEPS_BUILD_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")
@@ -14,14 +15,13 @@ macro(InitVariables)
     include(FetchContent)
     set(FETCHCONTENT_BASE_DIR "${DEPS_BUILD_PREFIX}")
     include(ExternalProject)
-    find_package(PkgConfig REQUIRED)
 
     set(ENV{CC} ${CMAKE_C_COMPILER})
     set(ENV{CXX} ${CMAKE_CXX_COMPILER})
-    set(ENV{CFLAGS} "$ENV{CFLAGS}")
     set(ENV{CPATH} "$ENV{CPATH}")
+    set(ENV{CFLAGS} "$ENV{CFLAGS} -I${DEP_INSTALL_DIR}/include")
     #    set(ENV{CFLAGS} "-fPIC $ENV{CFLAGS}")
-    set(ENV{CXXFLAGS} "$ENV{CXXFLAGS}")
+    set(ENV{CXXFLAGS} "$ENV{CXXFLAGS} -I${DEP_INSTALL_DIR}/include")
     #    set(ENV{CXXFLAGS} "-fPIC $ENV{CXXFLAGS}")
     message(STATUS "[InitVariables] Configure info. [DEP_NAME=${DEP_NAME}, DEPS_INSTALL_DIR=${DEPS_INSTALL_DIR}"
             ", DEPS_BUILD_PREFIX=${DEPS_BUILD_PREFIX}"
@@ -104,13 +104,12 @@ function(CheckVersion)
 endfunction(CheckVersion)
 
 macro(SetEnvVariables _DEP_INSTALL_DIR)
-    message(STATUS "[SetEnvVariables] [DEP_INSTALL_DIR=${_DEP_INSTALL_DIR}]")
     if (EXISTS "${_DEP_INSTALL_DIR}/lib")
-        #        set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${_DEP_INSTALL_DIR}/lib")
+        set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${_DEP_INSTALL_DIR}/lib")
         set(ENV{LIBRARY_PATH} "${_DEP_INSTALL_DIR}/lib:$ENV{LIBRARY_PATH}")
     endif ()
     if (EXISTS "${_DEP_INSTALL_DIR}/lib64")
-        #        set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${_DEP_INSTALL_DIR}/lib64")
+        set(ENV{LDFLAGS} "$ENV{LDFLAGS} -L${_DEP_INSTALL_DIR}/lib64")
         set(ENV{LIBRARY_PATH} "${_DEP_INSTALL_DIR}/lib64:$ENV{LIBRARY_PATH}")
     endif ()
     set(ENV{CPATH} "$ENV{CPATH}:${_DEP_INSTALL_DIR}/include")
@@ -120,6 +119,7 @@ macro(SetEnvVariables _DEP_INSTALL_DIR)
     if (EXISTS "${_DEP_INSTALL_DIR}/bin")
         set(ENV{PATH} "${_DEP_INSTALL_DIR}/bin:$ENV{PATH}")
     endif ()
+    message(STATUS "[SetEnvVariables] [DEP_INSTALL_DIR=${_DEP_INSTALL_DIR}]")
 endmacro(SetEnvVariables)
 
 macro(SetLoadVariables)
@@ -159,6 +159,9 @@ function(MakeDepReady)
         cmake_language(EVAL CODE "set(ARG_URL ${ARG_URL})")
     endif ()
 
+    #    if (NOT "${ARG_CONFIGURE_COMMAND}" STREQUAL "")
+    #        cmake_language(EVAL CODE "set(ARG_CONFIGURE_COMMAND ${ARG_CONFIGURE_COMMAND})")
+    #    endif ()
     if (ARG_DISABLE_CONFIGURE)
         set(ARG_CONFIGURE_COMMAND "\"\"")
     endif ()
@@ -166,8 +169,6 @@ function(MakeDepReady)
         message(STATUS "[MakeDepReady] download dependency. [DEP_NAME=${DEP_NAME}, URL=${ARG_URL}]")
         string(REPLACE ";" "|" CMAKE_PREFIX_PATH_STR "${CMAKE_PREFIX_PATH}")
         #        CONFIGURE_COMMAND env CFLAGS=\$ENV{CFLAGS} CPPFLAGS=\$ENV{CPPFLAGS} LDFLAGS=\$ENV{LDFLAGS} LIBRARY_PATH=\$ENV{LIBRARY_PATH} \${ARG_CONFIGURE_COMMAND}
-        #        message(STATUS "CKPT LIBRARY_PATH=$ENV{LIBRARY_PATH}")
-        #        message(STATUS "CKPT CPATH=$ENV{CPATH}")
         #        set(ENV{LIBRARY_PATH} \$ENV{LIBRARY_PATH})
         #        set(ENV{LD_LIBRARY_PATH} \$ENV{LIBRARY_PATH})
         #        set(ENV{CFLAGS} \$ENV{CFLAGS})
@@ -177,12 +178,6 @@ function(MakeDepReady)
 
         # 透传 空字符串的 COMMAND 有问题, 套一层 EVAL 来解决
         cmake_language(EVAL CODE "
-            set(ENV{LIBRARY_PATH} \$ENV{LIBRARY_PATH})
-            set(ENV{LD_LIBRARY_PATH} \$ENV{LIBRARY_PATH})
-            set(ENV{CFLAGS} \$ENV{CFLAGS})
-            set(ENV{CPATH} \$ENV{CPATH})
-            set(ENV{CPPFLAGS} \$ENV{CPPFLAGS})
-            set(ENV{LDFLAGS} \$ENV{LDFLAGS})
             ExternalProject_Add(\${DEP_NAME}_build
                 PREFIX \${DEP_PREFIX}
                 INSTALL_DIR \${DEP_INSTALL_DIR}
@@ -196,7 +191,7 @@ function(MakeDepReady)
                 DEPENDS \${ARG_DEPENDS}
                 DOWNLOAD_EXTRACT_TIMESTAMP TRUE
                 BUILD_IN_SOURCE \${ARG_BUILD_IN_SOURCE}
-                CONFIGURE_COMMAND \${ARG_CONFIGURE_COMMAND}
+                CONFIGURE_COMMAND ${ARG_CONFIGURE_COMMAND}
                 BUILD_COMMAND \${ARG_BUILD_COMMAND}
                 INSTALL_COMMAND \${ARG_INSTALL_COMMAND}
             )
@@ -274,11 +269,12 @@ function(MakeReadyNow)
         endif ()
         #    file(REMOVE_RECURSE ${BUILD_DIR})
     endif ()
+    SetLoadVariables()
+    SetEnvVariables(${DEP_INSTALL_DIR})
     # TODO 遍历 pc 文件
     if (EXISTS "${DEP_INSTALL_DIR}/lib/pkgconfig/${DEP_NAME}.pc")
-        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH} ")
+        set(ENV{PKG_CONFIG_PATH} "${DEP_INSTALL_DIR}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
         pkg_search_module(PKG_${DEP_UNAME} REQUIRED IMPORTED_TARGET GLOBAL QUIET ${DEP_NAME})
         message(STATUS "[MakeReadyNow::AddTarget] PkgConfig::PKG_${DEP_UNAME} ")
     endif ()
-    SetLoadVariables()
 endfunction(MakeReadyNow)

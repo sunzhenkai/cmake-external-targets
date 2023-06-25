@@ -1,5 +1,5 @@
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
+# brpc 没有用 find_package 查找 zlib, 先在这里添加在
 include(${CMAKE_CURRENT_LIST_DIR}/../zlib/load.cmake)
-SetEnvVariables(${ZLIB_INSTALL_DIR})
 #MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION t0.0.7)
 MakeReadyNow(PATH ${CMAKE_CURRENT_LIST_DIR} VERSION 1.5.0)
