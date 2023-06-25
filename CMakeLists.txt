@@ -1,5 +1,5 @@
-PROJECT(cmake-external-targets)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.24)
+PROJECT(cmake-external-targets)
 SET(CMAKE_CXX_STANDARD 17)
 
 include(absl/load.cmake)
