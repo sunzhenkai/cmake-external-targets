@@ -43,6 +43,12 @@ centos8_packages=(
 )
 
 arch_packages=(
+    gcc
+    make
+    cmake
+    automake
+    autoconf
+    m4
 )
 
 opensuse_packages=(

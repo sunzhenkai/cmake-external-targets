@@ -6,6 +6,7 @@ set(EXTERN_VARIABLES
         CMAKE_C_COMPILER CMAKE_CXX_COMPILER CFLAGS CXXFLAGS CPATH)
 find_program(MAKE_EXECUTABLE NAMES make gmake mingw32-make REQUIRED)
 find_package(PkgConfig REQUIRED)
+#set($ENV{LANG} "en_US.UTF-8")
 macro(InitVariables)
     set(DEPS_INSTALL_DIR "/tmp/cpp-external-lib" CACHE STRING "library install prefix")
     set(DEPS_BUILD_PREFIX "/tmp/cpp-external-prefix" CACHE STRING "library install prefix")

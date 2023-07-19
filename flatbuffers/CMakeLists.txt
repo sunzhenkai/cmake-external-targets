@@ -4,4 +4,4 @@ SET(CMAKE_CXX_STANDARD 17)
 include(${CMAKE_CURRENT_LIST_DIR}/../base.cmake)
 
 # https://github.com/google/flatbuffers
-MakeDepReady(VERSION ${VERSION} AUTHOR google)
+MakeDepReady(VERSION ${VERSION} AUTHOR google EXTRA_ARGS -DFLATBUFFERS_BUILD_TESTS=OFF)
