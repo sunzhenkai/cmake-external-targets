@@ -1,4 +1,4 @@
-# Dependencies
+Dependencies
 ```shell
 cmake >= 3.24
 ```

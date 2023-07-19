@@ -22,7 +22,6 @@ debian_packages=(
     pkg-config
     xfslibs-dev
     systemtap-sdt-dev
-    libgnutls28-dev
 )
 
 fedora_packages=(
